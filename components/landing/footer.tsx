@@ -4,19 +4,23 @@ import { Separator } from '@/components/ui/separator'
 export function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground py-12">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col items-center space-y-6">
-          <Image
-            src="/duerify-logo-new.png"
-            alt="DueRify"
-            width={120}
-            height={48}
-            className="h-12 w-auto"
-          />
+      <div className="flex flex-col items-center space-y-6">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center">
+            <Image
+              src="/duerify-logo-new.png"
+              alt="DueRify"
+              width={120}
+              height={48}
+              className="h-12 w-auto"
+            />
+          </div>
+        </div>
 
-          <Separator className="bg-blue-400 w-full max-w-7xl" />
+        <Separator className="bg-blue-400 w-full" />
 
-          <div className="text-center space-y-2 max-w-2xl">
+        <div className="container mx-auto px-4">
+          <div className="text-center space-y-2 max-w-2xl mx-auto">
             <p className="text-sm text-blue-200">
               © 2025 DueRify. All rights reserved.
             </p>
