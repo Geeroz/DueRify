@@ -31,7 +31,7 @@ export function Header() {
 
             <ThemeToggle />
 
-            <Button variant="ghost" asChild>
+            <Button variant="default" asChild>
               <Link href="/login">Sign In</Link>
             </Button>
           </div>
