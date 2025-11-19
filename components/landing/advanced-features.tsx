@@ -46,7 +46,7 @@ const advancedFeatures = [
 export function AdvancedFeatures() {
   return (
     <section className="py-20">
-      <div className="container">
+      <div className="container mx-auto px-4">
         <div className="text-center mb-12 space-y-4">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
             Advanced Features for Modern Startups
@@ -57,7 +57,7 @@ export function AdvancedFeatures() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mx-auto max-w-6xl grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {advancedFeatures.map((feature) => {
             const Icon = feature.icon
             return (

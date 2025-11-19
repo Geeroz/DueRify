@@ -59,7 +59,7 @@ const features = [
 export function Features() {
   return (
     <section className="py-20">
-      <div className="container">
+      <div className="container mx-auto px-4">
         <div className="text-center mb-12 space-y-4">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
             Built for Every Stakeholder
@@ -70,7 +70,7 @@ export function Features() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto max-w-7xl grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {features.map((feature) => {
             const Icon = feature.icon
             return (

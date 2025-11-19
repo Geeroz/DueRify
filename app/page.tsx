@@ -17,11 +17,15 @@ export default function Home() {
 
         <Features />
 
-        <Separator className="container" />
+        <div className="container mx-auto px-4">
+          <Separator />
+        </div>
 
         <DocumentTypes />
 
-        <Separator className="container" />
+        <div className="container mx-auto px-4">
+          <Separator />
+        </div>
 
         <AdvancedFeatures />
 

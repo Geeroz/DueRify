@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 export function Hero() {
   return (
     <section className="relative overflow-hidden bg-primary py-20 text-primary-foreground md:py-32">
-      <div className="container relative z-10">
+      <div className="container mx-auto px-4 relative z-10">
         <div className="mx-auto max-w-4xl text-center space-y-8">
           <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
             Smart Data Room Management
