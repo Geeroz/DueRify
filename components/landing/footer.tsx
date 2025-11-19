@@ -5,7 +5,7 @@ export function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground py-12">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col items-center space-y-6 max-w-4xl mx-auto">
+        <div className="flex flex-col items-center space-y-6">
           <Image
             src="/duerify-logo-new.png"
             alt="DueRify"
@@ -14,13 +14,13 @@ export function Footer() {
             className="h-12 w-auto"
           />
 
-          <Separator className="bg-blue-400 w-full" />
+          <Separator className="bg-blue-400 w-full max-w-7xl" />
 
-          <div className="text-center space-y-2">
+          <div className="text-center space-y-2 max-w-2xl">
             <p className="text-sm text-blue-200">
               © 2025 DueRify. All rights reserved.
             </p>
-            <p className="text-xs text-blue-200 max-w-2xl">
+            <p className="text-xs text-blue-200">
               No. 25 Alma Link Building, Level 17, Soi Chidlom, Ploenchit Road,
               <br />
               Lumpini, Pathumwan Bangkok 10330. Thailand.
