@@ -23,16 +23,10 @@ export function Header() {
 
           <div className="flex items-center gap-2">
             <Button variant="outline" asChild>
-              <a
-                href="https://fin.duerify.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2"
-              >
+              <Link href="/calculator" className="flex items-center gap-2">
                 <Calculator className="h-4 w-4" />
-                <span className="hidden sm:inline">Co-Founder Equity Calculator</span>
-                <span className="sm:hidden">Calculator</span>
-              </a>
+                <span className="hidden md:inline">Calculator</span>
+              </Link>
             </Button>
 
             <ThemeToggle />
