@@ -1,0 +1,390 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USER & AUTHENTICATION
+// ============================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // For email/password auth
+  role          Role      @default(STARTUP_USER)
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  startups      StartupUser[]      // Many-to-many with Startup
+  documents     Document[]         @relation("DocumentUploader")
+  auditLogs     AuditLog[]
+  investorGrants InvestorGrant[]   @relation("InvestorUser")
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("users")
+}
+
+enum Role {
+  INCUBATOR_ADMIN
+  STARTUP_ADMIN
+  STARTUP_USER
+  INVESTOR_VIEWER
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ============================================================================
+// STARTUP & MULTI-TENANCY
+// ============================================================================
+
+model Startup {
+  id          String   @id @default(cuid())
+  name        String
+  domain      String?  @unique
+  industry    String?
+  description String?
+  logoUrl     String?
+  website     String?
+
+  // Relations
+  users           StartupUser[]
+  documents       Document[]
+  onePagers       OnePager[]
+  assessments     Assessment[]
+  investorGrants  InvestorGrant[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("startups")
+}
+
+model StartupUser {
+  id        String   @id @default(cuid())
+  userId    String
+  startupId String
+  role      Role     @default(STARTUP_USER)
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startup   Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, startupId])
+  @@index([startupId])
+  @@map("startup_users")
+}
+
+model InvestorGrant {
+  id         String   @id @default(cuid())
+  investorId String
+  startupId  String
+  grantedBy  String   // userId who granted access
+
+  investor   User     @relation("InvestorUser", fields: [investorId], references: [id], onDelete: Cascade)
+  startup    Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+
+  @@unique([investorId, startupId])
+  @@index([investorId])
+  @@index([startupId])
+  @@map("investor_grants")
+}
+
+// ============================================================================
+// DOCUMENT MANAGEMENT
+// ============================================================================
+
+model Document {
+  id                 String   @id @default(cuid())
+  startupId          String
+  startup            Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+
+  filename           String
+  blobUrl            String   // Vercel Blob URL
+  blobKey            String   // For deletion
+  fileSize           Int      // Bytes
+  mimeType           String
+
+  category           String   // Financial, Legal, Product, Team, Market Research, Custom
+  customCategory     String?  // If category = "Custom"
+  verificationStatus String   @default("PENDING") // PENDING, VERIFIED, REJECTED
+  verificationNotes  String?
+
+  uploadedById       String
+  uploadedBy         User     @relation("DocumentUploader", fields: [uploadedById], references: [id])
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([startupId, category])
+  @@index([startupId, verificationStatus])
+  @@index([uploadedById])
+  @@map("documents")
+}
+
+// ============================================================================
+// ONE-PAGER
+// ============================================================================
+
+model OnePager {
+  id             String   @id @default(cuid())
+  startupId      String
+  startup        Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+
+  slug           String   @unique  // Public URL slug
+  isPublic       Boolean  @default(true)
+
+  // Content sections
+  companyName    String
+  problemSection String?
+  solutionSection String?
+  productSection String?
+  teamSection    String?
+  contactInfo    String?
+
+  totalViews     Int      @default(0)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  views          OnePagerView[]
+
+  @@index([startupId])
+  @@index([slug])
+  @@map("one_pagers")
+}
+
+model OnePagerView {
+  id          String   @id @default(cuid())
+  onePagerId  String
+  onePager    OnePager @relation(fields: [onePagerId], references: [id], onDelete: Cascade)
+
+  viewerIp    String?
+  viewerAgent String?
+  referrer    String?
+
+  viewedAt    DateTime @default(now())
+
+  @@index([onePagerId])
+  @@map("one_pager_views")
+}
+
+// ============================================================================
+// IDE READINESS ASSESSMENT
+// ============================================================================
+
+model Assessment {
+  id        String   @id @default(cuid())
+  startupId String
+  startup   Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+
+  // Scores (0-100)
+  trlScore  Float?   // Technology Readiness Level
+  mrlScore  Float?   // Manufacturing Readiness Level
+  crlScore  Float?   // Commercial Readiness Level
+  brlScore  Float?   // Business Readiness Level
+
+  overallScore Float? // Calculated average
+
+  // Raw assessment data (JSON)
+  trlData   Json?
+  mrlData   Json?
+  crlData   Json?
+  brlData   Json?
+
+  // Recommendations
+  recommendations Json?
+
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([startupId, createdAt])
+  @@map("assessments")
+}
+
+// ============================================================================
+// TEAM MANAGEMENT
+// ============================================================================
+
+model Invitation {
+  id        String   @id @default(cuid())
+  email     String
+  startupId String
+  role      Role
+  token     String   @unique
+  expires   DateTime
+
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([token])
+  @@map("invitations")
+}
+
+model NotificationPreference {
+  id     String  @id @default(cuid())
+  userId String
+  type   String  // document_activities, assessment_completions, team_changes, etc.
+  enabled Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, type])
+  @@map("notification_preferences")
+}
+
+// ============================================================================
+// AUDIT LOGGING
+// ============================================================================
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  action     String   // view, download, upload, delete, etc.
+  resource   String   // documents, one_pager, assessment, etc.
+  resourceId String?
+
+  startupId  String?  // Optional tenant context
+
+  ipAddress  String?
+  userAgent  String?
+
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([startupId, createdAt])
+  @@index([resource, resourceId])
+  @@map("audit_logs")
+}
+
+// ============================================================================
+// DASHBOARD METRICS (cached aggregates)
+// ============================================================================
+
+model DashboardMetric {
+  id        String   @id @default(cuid())
+  startupId String
+
+  metricKey String   // document_count, verified_count, readiness_score, etc.
+  value     Float
+
+  calculatedAt DateTime @default(now())
+
+  @@unique([startupId, metricKey])
+  @@index([startupId])
+  @@map("dashboard_metrics")
+}
+
+// ============================================================================
+// SUPPORT & HELP
+// ============================================================================
+
+model SupportTicket {
+  id          String   @id @default(cuid())
+  userId      String
+  subject     String
+  description String
+  priority    String   // LOW, MEDIUM, HIGH
+  status      String   @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@map("support_tickets")
+}
+
+// ============================================================================
+// PUBLIC WEBSITE
+// ============================================================================
+
+model ContactInquiry {
+  id      String   @id @default(cuid())
+  name    String
+  email   String
+  company String?
+  message String
+
+  createdAt DateTime @default(now())
+
+  @@map("contact_inquiries")
+}
+
+// ============================================================================
+// BILLING (Placeholder for MVP)
+// ============================================================================
+
+model Subscription {
+  id        String   @id @default(cuid())
+  startupId String
+  plan      String   // e.g., "STARTUP_PLAN"
+  status    String   // ACTIVE, CANCELLED, EXPIRED
+  amount    Int      // In cents (THB)
+  interval  String   // ANNUAL, MONTHLY
+
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([startupId])
+  @@map("subscriptions")
+}
