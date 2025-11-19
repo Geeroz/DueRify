@@ -1,0 +1,104 @@
+import { Rocket, Building, ChartLine, Cog, CheckCircle } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+const features = [
+  {
+    title: 'FOR STARTUPS',
+    icon: Rocket,
+    iconBg: 'bg-accent',
+    cardBg: 'bg-emerald-50 dark:bg-emerald-950/20',
+    border: 'border-emerald-100 dark:border-emerald-900',
+    features: [
+      'Document Upload & Management',
+      'One-Pager Creation',
+      'Investor Connections',
+      'Progress Tracking',
+    ],
+  },
+  {
+    title: 'FOR INCUBATORS',
+    icon: Building,
+    iconBg: 'bg-primary',
+    cardBg: 'bg-blue-50 dark:bg-blue-950/20',
+    border: 'border-blue-100 dark:border-blue-900',
+    features: [
+      'Document Verification',
+      'Portfolio Management',
+      'Analytics Dashboard',
+      'Startup Oversight',
+    ],
+  },
+  {
+    title: 'FOR INVESTORS',
+    icon: ChartLine,
+    iconBg: 'bg-purple-600',
+    cardBg: 'bg-purple-50 dark:bg-purple-950/20',
+    border: 'border-purple-100 dark:border-purple-900',
+    features: [
+      'Verified Document Access',
+      'Due Diligence Tools',
+      'Investment Analytics',
+      'Deal Flow Management',
+    ],
+  },
+  {
+    title: 'FOR ADMINS',
+    icon: Cog,
+    iconBg: 'bg-orange-500',
+    cardBg: 'bg-orange-50 dark:bg-orange-950/20',
+    border: 'border-orange-100 dark:border-orange-900',
+    features: [
+      'Platform Management',
+      'User Role Control',
+      'System Analytics',
+      'Audit Trails',
+    ],
+  },
+]
+
+export function Features() {
+  return (
+    <section className="py-20">
+      <div className="container">
+        <div className="text-center mb-12 space-y-4">
+          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+            Built for Every Stakeholder
+          </h2>
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+            Comprehensive features designed for startups, incubators, and investors
+            to collaborate securely.
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {features.map((feature) => {
+            const Icon = feature.icon
+            return (
+              <Card
+                key={feature.title}
+                className={`${feature.cardBg} ${feature.border} transition-all hover:-translate-y-1 hover:shadow-lg`}
+              >
+                <CardHeader>
+                  <div className={`w-12 h-12 rounded-lg ${feature.iconBg} flex items-center justify-center mb-4`}>
+                    <Icon className="h-6 w-6 text-white" />
+                  </div>
+                  <CardTitle className="text-lg">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {feature.features.map((item) => (
+                      <li key={item} className="flex items-start gap-2 text-sm">
+                        <CheckCircle className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
