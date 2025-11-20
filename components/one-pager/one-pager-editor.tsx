@@ -38,11 +38,10 @@ type OnePagerFormData = z.infer<typeof onePagerSchema>
 
 interface OnePagerEditorProps {
   startupId: string
-  onShare: () => void
-  onPreview: () => void
+  existingData?: any | null
 }
 
-export function OnePagerEditor({ startupId, onShare, onPreview }: OnePagerEditorProps) {
+export function OnePagerEditor({ startupId, existingData }: OnePagerEditorProps) {
   const [onePagerId, setOnePagerId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -61,10 +60,24 @@ export function OnePagerEditor({ startupId, onShare, onPreview }: OnePagerEditor
     },
   })
 
-  // Fetch existing one-pager
+  // Initialize with existing data
   useEffect(() => {
-    fetchOnePager()
-  }, [startupId])
+    if (existingData) {
+      setOnePagerId(existingData.id)
+      form.reset({
+        companyName: existingData.companyName || '',
+        problemSection: existingData.problemSection || '',
+        solutionSection: existingData.solutionSection || '',
+        productSection: existingData.productSection || '',
+        teamSection: existingData.teamSection || '',
+        contactInfo: existingData.contactInfo || '',
+        isPublic: existingData.isPublic ?? true,
+      })
+      setLoading(false)
+    } else {
+      fetchOnePager()
+    }
+  }, [startupId, existingData])
 
   const fetchOnePager = async () => {
     try {
@@ -170,16 +183,6 @@ export function OnePagerEditor({ startupId, onShare, onPreview }: OnePagerEditor
           <Badge variant="secondary" className="text-xs">
             {getSaveStatus()}
           </Badge>
-          <Button variant="outline" onClick={onPreview}>
-            <Eye className="h-4 w-4 mr-2" />
-            Preview
-          </Button>
-          {onePagerId && (
-            <Button onClick={onShare}>
-              <Share2 className="h-4 w-4 mr-2" />
-              Share
-            </Button>
-          )}
         </div>
       </div>
 
