@@ -69,13 +69,17 @@ export function DocumentList({ startupId, refreshTrigger, userRole }: DocumentLi
       if (search) params.append('search', search)
 
       const response = await fetch(`/api/documents?${params}`)
-      if (!response.ok) throw new Error('Failed to fetch documents')
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('API Error:', response.status, errorData)
+        throw new Error(errorData.error || 'Failed to fetch documents')
+      }
 
       const result = await response.json()
       setDocuments(result.data)
     } catch (error) {
       console.error('Fetch error:', error)
-      toast.error('Failed to load documents')
+      toast.error(error instanceof Error ? error.message : 'Failed to load documents')
     } finally {
       setLoading(false)
     }
