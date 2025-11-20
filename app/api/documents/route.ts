@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     const validated = listSchema.parse(params)
 
     // 4. Check user has access to this startup
-    const userStartup = await prisma.startupUser.findFirst({
+    let userStartup = await prisma.startupUser.findFirst({
       where: {
         userId: session.user.id,
         startupId: validated.startupId,
@@ -52,7 +52,24 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    if (!userStartup) {
+    // If not found, check investor access
+    if (!userStartup && session.user.role === 'INVESTOR_VIEWER') {
+      const investorGrant = await prisma.investorGrant.findUnique({
+        where: {
+          investorId_startupId: {
+            investorId: session.user.id,
+            startupId: validated.startupId,
+          },
+        },
+      })
+
+      if (!investorGrant) {
+        return NextResponse.json({ error: 'Access denied to this startup' }, { status: 403 })
+      }
+
+      // For investors, only show verified documents
+      validated.verificationStatus = 'VERIFIED'
+    } else if (!userStartup) {
       return NextResponse.json({ error: 'Access denied to this startup' }, { status: 403 })
     }
 

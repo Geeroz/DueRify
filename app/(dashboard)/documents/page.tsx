@@ -15,6 +15,40 @@ export default async function DocumentsPage() {
     redirect('/login')
   }
 
+  // Handle investor access
+  if (session.user.role === 'INVESTOR_VIEWER') {
+    const investorGrant = await prisma.investorGrant.findFirst({
+      where: {
+        investorId: session.user.id,
+      },
+      include: {
+        startup: true,
+      },
+    })
+
+    if (!investorGrant) {
+      return (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center space-y-4">
+            <h2 className="text-2xl font-bold">No Startup Access</h2>
+            <p className="text-muted-foreground">
+              You don't have access to any startups yet.
+            </p>
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <DocumentsPageClient
+        startupId={investorGrant.startupId}
+        userRole="INVESTOR_VIEWER"
+        userId={session.user.id}
+        isInvestor={true}
+      />
+    )
+  }
+
   // Get user's first startup (in a real app, this would be from a tenant selector)
   const userStartup = await prisma.startupUser.findFirst({
     where: {
@@ -46,6 +80,7 @@ export default async function DocumentsPage() {
       startupId={userStartup.startupId}
       userRole={userStartup.user.role}
       userId={session.user.id}
+      isInvestor={false}
     />
   )
 }

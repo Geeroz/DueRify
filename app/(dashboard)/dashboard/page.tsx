@@ -10,6 +10,75 @@ import Link from 'next/link'
 
 export default async function DashboardPage() {
   const session = await auth()
+
+  // Handle investor view
+  if (session?.user.role === 'INVESTOR_VIEWER') {
+    const investorGrants = await prisma.investorGrant.findMany({
+      where: { investorId: session.user.id },
+      include: {
+        startup: {
+          select: {
+            id: true,
+            name: true,
+            industry: true,
+            description: true,
+          },
+        },
+      },
+    })
+
+    // For investors, show list of startups they have access to
+    return (
+      <div className="space-y-6 md:space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+              Investor Dashboard
+            </h1>
+            <p className="mt-2 text-sm md:text-base text-zinc-600 dark:text-zinc-400">
+              View startups you have access to
+            </p>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900">
+            <span className="text-xs font-medium text-blue-700 dark:text-blue-300">
+              View Only Access
+            </span>
+          </div>
+        </div>
+
+        {investorGrants.length === 0 ? (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <p className="text-center text-sm md:text-base text-zinc-600 dark:text-zinc-400">
+                You don't have access to any startups yet.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {investorGrants.map((grant) => (
+              <Card key={grant.id}>
+                <CardHeader>
+                  <CardTitle className="text-base md:text-lg">{grant.startup.name}</CardTitle>
+                  <CardDescription className="text-sm">
+                    {grant.startup.industry || 'No industry set'}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button asChild className="w-full">
+                    <Link href={`/dashboard?startup=${grant.startup.id}`}>
+                      View Details
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
   const startups = await getUserStartups()
 
   // Get current startup context if available

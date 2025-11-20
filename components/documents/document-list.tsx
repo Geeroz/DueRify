@@ -43,9 +43,10 @@ interface DocumentListProps {
   startupId: string
   refreshTrigger?: number
   userRole?: string
+  isInvestor?: boolean
 }
 
-export function DocumentList({ startupId, refreshTrigger, userRole }: DocumentListProps) {
+export function DocumentList({ startupId, refreshTrigger, userRole, isInvestor = false }: DocumentListProps) {
   const [documents, setDocuments] = useState<Document[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -162,10 +163,12 @@ export function DocumentList({ startupId, refreshTrigger, userRole }: DocumentLi
   }
 
   const canDelete = (doc: Document, currentUserId?: string) => {
+    if (isInvestor) return false
     return userRole === 'INCUBATOR_ADMIN' || userRole === 'STARTUP_ADMIN' || doc.uploadedBy.id === currentUserId
   }
 
   const canVerify = () => {
+    if (isInvestor) return false
     return userRole === 'INCUBATOR_ADMIN' || userRole === 'STARTUP_ADMIN'
   }
 
