@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import prisma from '@/lib/prisma'
 
 export default async function DashboardLayout({
   children,
@@ -13,6 +14,14 @@ export default async function DashboardLayout({
   if (!session) {
     redirect('/login')
   }
+
+  // Get user role for conditional navigation
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { role: true },
+  })
+
+  const isIncubatorAdmin = user?.role === 'INCUBATOR_ADMIN'
 
   return (
     <div className="flex min-h-screen">
@@ -31,6 +40,14 @@ export default async function DashboardLayout({
           >
             Dashboard
           </Link>
+          {isIncubatorAdmin && (
+            <Link
+              href="/portfolio"
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+            >
+              Portfolio
+            </Link>
+          )}
           <Link
             href="/documents"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
