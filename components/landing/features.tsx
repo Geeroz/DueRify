@@ -5,9 +5,9 @@ const features = [
   {
     title: 'FOR STARTUPS',
     icon: Rocket,
-    iconBg: 'bg-accent',
-    cardBg: 'bg-emerald-50 dark:bg-emerald-950/20',
-    border: 'border-emerald-100 dark:border-emerald-900',
+    iconBg: 'bg-emerald-600',
+    cardBg: 'bg-slate-50 dark:bg-slate-950',
+    border: 'border-slate-200 dark:border-slate-800',
     features: [
       'Document Upload & Management',
       'One-Pager Creation',
@@ -19,8 +19,8 @@ const features = [
     title: 'FOR INCUBATORS',
     icon: Building,
     iconBg: 'bg-primary',
-    cardBg: 'bg-blue-50 dark:bg-blue-950/20',
-    border: 'border-blue-100 dark:border-blue-900',
+    cardBg: 'bg-slate-50 dark:bg-slate-950',
+    border: 'border-slate-200 dark:border-slate-800',
     features: [
       'Document Verification',
       'Portfolio Management',
@@ -32,8 +32,8 @@ const features = [
     title: 'FOR INVESTORS',
     icon: ChartLine,
     iconBg: 'bg-purple-600',
-    cardBg: 'bg-purple-50 dark:bg-purple-950/20',
-    border: 'border-purple-100 dark:border-purple-900',
+    cardBg: 'bg-slate-50 dark:bg-slate-950',
+    border: 'border-slate-200 dark:border-slate-800',
     features: [
       'Verified Document Access',
       'Due Diligence Tools',
@@ -45,8 +45,8 @@ const features = [
     title: 'FOR ADMINS',
     icon: Cog,
     iconBg: 'bg-orange-500',
-    cardBg: 'bg-orange-50 dark:bg-orange-950/20',
-    border: 'border-orange-100 dark:border-orange-900',
+    cardBg: 'bg-slate-50 dark:bg-slate-950',
+    border: 'border-slate-200 dark:border-slate-800',
     features: [
       'Platform Management',
       'User Role Control',
@@ -88,7 +88,7 @@ export function Features() {
                   <ul className="space-y-2">
                     {feature.features.map((item) => (
                       <li key={item} className="flex items-start gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-accent shrink-0 mt-0.5" />
+                        <CheckCircle className="h-4 w-4 text-slate-300 dark:text-slate-600 shrink-0 mt-0.5" />
                         <span>{item}</span>
                       </li>
                     ))}
