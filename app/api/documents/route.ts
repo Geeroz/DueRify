@@ -4,7 +4,12 @@ import prisma from '@/lib/prisma'
 import { z } from 'zod'
 
 const listSchema = z.object({
-  startupId: z.string().cuid(),
+  startupId: z.string().nullable().transform(val => {
+    if (!val || val === 'null' || val === 'undefined') {
+      throw new Error('Startup ID is required')
+    }
+    return val
+  }),
   category: z.string().optional(),
   verificationStatus: z.enum(['PENDING', 'VERIFIED', 'REJECTED']).optional(),
   search: z.string().optional(),
@@ -30,6 +35,8 @@ export async function GET(request: NextRequest) {
       sortBy: searchParams.get('sortBy') || 'createdAt',
       sortOrder: searchParams.get('sortOrder') || 'desc',
     }
+
+    console.log('Documents API - Received params:', params)
 
     // 3. Validate input
     const validated = listSchema.parse(params)

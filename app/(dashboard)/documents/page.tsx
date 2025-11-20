@@ -39,6 +39,8 @@ export default async function DocumentsPage() {
     )
   }
 
+  console.log('Documents page - startupId:', userStartup.startupId, 'role:', userStartup.user.role)
+
   return (
     <DocumentsPageClient
       startupId={userStartup.startupId}
