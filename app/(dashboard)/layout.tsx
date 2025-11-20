@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { MobileSidebar } from '@/components/layout/mobile-sidebar'
 import prisma from '@/lib/prisma'
 
 export default async function DashboardLayout({
@@ -25,8 +26,8 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+      {/* Sidebar - Hidden on mobile */}
+      <aside className="hidden md:flex w-64 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex-col">
         <div className="flex h-16 items-center border-b border-zinc-200 dark:border-zinc-800 px-6">
           <Link href="/dashboard" className="text-xl font-bold">
             DueRify
@@ -78,27 +79,37 @@ export default async function DashboardLayout({
       {/* Main content */}
       <div className="flex flex-1 flex-col">
         {/* Header */}
-        <header className="flex h-16 items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-6">
+        <header className="flex h-16 items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 md:px-6">
           <div className="flex items-center gap-4">
-            <h2 className="text-sm text-zinc-600 dark:text-zinc-400">
-              Welcome back, {session.user.name}
-            </h2>
+            {/* Mobile menu button */}
+            <MobileSidebar isIncubatorAdmin={isIncubatorAdmin} />
+
+            {/* Logo on mobile, welcome message on desktop */}
+            <div className="flex items-center gap-2">
+              <Link href="/dashboard" className="text-xl font-bold md:hidden">
+                DueRify
+              </Link>
+              <h2 className="hidden md:block text-sm text-zinc-600 dark:text-zinc-400">
+                Welcome back, {session.user.name}
+              </h2>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-zinc-600 dark:text-zinc-400">
+          <div className="flex items-center gap-2 md:gap-4">
+            <span className="hidden sm:inline text-sm text-zinc-600 dark:text-zinc-400 truncate max-w-[150px] md:max-w-none">
               {session.user.email}
             </span>
             <form action="/api/auth/signout" method="POST">
               <Button type="submit" variant="outline" size="sm">
-                Sign Out
+                <span className="hidden sm:inline">Sign Out</span>
+                <span className="sm:hidden">Out</span>
               </Button>
             </form>
           </div>
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-zinc-900 p-6">
+        <main className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-zinc-900 p-4 md:p-6">
           {children}
         </main>
       </div>
