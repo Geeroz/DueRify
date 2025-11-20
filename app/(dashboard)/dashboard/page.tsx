@@ -1,12 +1,146 @@
 import { auth } from '@/lib/auth'
-import { getUserStartups } from '@/lib/tenant'
+import { getUserStartups, getCurrentStartup } from '@/lib/tenant'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { StatsCards } from '@/components/dashboard/stats-cards'
+import { ActivityFeed } from '@/components/dashboard/activity-feed'
+import { DocumentCompletion } from '@/components/dashboard/document-completion'
+import prisma from '@/lib/prisma'
 import Link from 'next/link'
 
 export default async function DashboardPage() {
   const session = await auth()
   const startups = await getUserStartups()
+
+  // Get current startup context if available
+  let currentStartup = null
+  let stats = null
+  let documentCategories = null
+  let activities = null
+
+  try {
+    currentStartup = await getCurrentStartup()
+
+    if (currentStartup) {
+      // Fetch document statistics
+      const documents = await prisma.document.findMany({
+        where: { startupId: currentStartup.id },
+        select: {
+          id: true,
+          category: true,
+          verificationStatus: true,
+          createdAt: true,
+          filename: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      })
+
+      const totalDocuments = documents.length
+      const verifiedDocuments = documents.filter(d => d.verificationStatus === 'VERIFIED').length
+      const pendingDocuments = documents.filter(d => d.verificationStatus === 'PENDING').length
+
+      // Fetch latest assessment
+      const assessment = await prisma.assessment.findFirst({
+        where: { startupId: currentStartup.id },
+        orderBy: { createdAt: 'desc' },
+        select: { overallScore: true },
+      })
+
+      stats = {
+        totalDocuments,
+        verifiedDocuments,
+        pendingDocuments,
+        overallScore: assessment?.overallScore || null,
+      }
+
+      // Calculate document categories
+      const requiredCategories = ['FINANCIAL', 'LEGAL', 'PRODUCT_SERVICE', 'TEAM']
+      const categoryCounts = documents.reduce((acc, doc) => {
+        acc[doc.category] = (acc[doc.category] || 0) + 1
+        return acc
+      }, {} as Record<string, number>)
+
+      documentCategories = [
+        { name: 'Financial', count: categoryCounts['FINANCIAL'] || 0, required: true },
+        { name: 'Legal', count: categoryCounts['LEGAL'] || 0, required: true },
+        { name: 'Product/Service', count: categoryCounts['PRODUCT_SERVICE'] || 0, required: true },
+        { name: 'Team', count: categoryCounts['TEAM'] || 0, required: true },
+        { name: 'Market Research', count: categoryCounts['MARKET_RESEARCH'] || 0, required: false },
+        { name: 'Custom', count: categoryCounts['CUSTOM'] || 0, required: false },
+      ]
+
+      // Build recent activities from various sources
+      const recentActivities: any[] = []
+
+      // Recent document uploads
+      documents.slice(0, 3).forEach(doc => {
+        recentActivities.push({
+          id: `doc-${doc.id}`,
+          type: 'document_uploaded',
+          title: 'Document Uploaded',
+          description: doc.filename,
+          timestamp: doc.createdAt,
+        })
+      })
+
+      // Recent verified documents
+      const verifiedDocs = documents
+        .filter(d => d.verificationStatus === 'VERIFIED')
+        .slice(0, 2)
+      verifiedDocs.forEach(doc => {
+        recentActivities.push({
+          id: `verified-${doc.id}`,
+          type: 'document_verified',
+          title: 'Document Verified',
+          description: doc.filename,
+          timestamp: doc.createdAt,
+        })
+      })
+
+      // Assessment completion
+      if (assessment) {
+        const assessmentRecord = await prisma.assessment.findFirst({
+          where: { startupId: currentStartup.id },
+          orderBy: { updatedAt: 'desc' },
+          select: { updatedAt: true, completedAt: true },
+        })
+
+        if (assessmentRecord) {
+          recentActivities.push({
+            id: 'assessment',
+            type: 'assessment_completed',
+            title: assessmentRecord.completedAt ? 'Assessment Completed' : 'Assessment Updated',
+            description: `Readiness score: ${assessment.overallScore?.toFixed(0)}`,
+            timestamp: assessmentRecord.updatedAt,
+          })
+        }
+      }
+
+      // One-pager updates
+      const onePager = await prisma.onePager.findFirst({
+        where: { startupId: currentStartup.id },
+        orderBy: { updatedAt: 'desc' },
+        select: { updatedAt: true },
+      })
+
+      if (onePager) {
+        recentActivities.push({
+          id: 'onepager',
+          type: 'one_pager_updated',
+          title: 'One-Pager Updated',
+          description: 'Company profile has been updated',
+          timestamp: onePager.updatedAt,
+        })
+      }
+
+      // Sort by timestamp and take top 5
+      activities = recentActivities
+        .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+        .slice(0, 5)
+    }
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error)
+  }
 
   return (
     <div className="space-y-6 md:space-y-8">
@@ -18,6 +152,28 @@ export default async function DashboardPage() {
           Welcome to your DueRify dashboard
         </p>
       </div>
+
+      {/* Stats Cards - Show only if there's a current startup */}
+      {stats && (
+        <StatsCards
+          totalDocuments={stats.totalDocuments}
+          verifiedDocuments={stats.verifiedDocuments}
+          pendingDocuments={stats.pendingDocuments}
+          overallScore={stats.overallScore}
+        />
+      )}
+
+      {/* Analytics Grid - Show only if there's a current startup */}
+      {currentStartup && documentCategories && activities && (
+        <div className="grid gap-6 lg:grid-cols-2">
+          <DocumentCompletion
+            categories={documentCategories}
+            totalDocuments={stats!.totalDocuments}
+            verifiedDocuments={stats!.verifiedDocuments}
+          />
+          <ActivityFeed activities={activities} />
+        </div>
+      )}
 
       {/* User info card */}
       <Card>
