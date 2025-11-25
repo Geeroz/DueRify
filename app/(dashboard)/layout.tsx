@@ -1,8 +1,8 @@
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { MobileSidebar } from '@/components/layout/mobile-sidebar'
+import { SignOutButton } from '@/components/auth/sign-out-button'
 import prisma from '@/lib/prisma'
 
 export default async function DashboardLayout({
@@ -99,12 +99,7 @@ export default async function DashboardLayout({
             <span className="hidden sm:inline text-sm text-zinc-600 dark:text-zinc-400 truncate max-w-[150px] md:max-w-none">
               {session.user.email}
             </span>
-            <form action="/api/auth/signout" method="POST">
-              <Button type="submit" variant="outline" size="sm">
-                <span className="hidden sm:inline">Sign Out</span>
-                <span className="sm:hidden">Out</span>
-              </Button>
-            </form>
+            <SignOutButton />
           </div>
         </header>
 
