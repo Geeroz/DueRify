@@ -23,7 +23,7 @@ Added a WYSIWYG Landing Page Builder using Puck editor, allowing startups to cre
   - Sections: Features Grid, Stats, Testimonial, CTA Banner
   - Footer: Full footer with links and social
 - **Landing Page Management**: Create, edit, delete, publish/unpublish
-- **Public Rendering**: Published pages at `/p/[slug]`
+- **Public Rendering**: Published pages at `/page/[slug]`
 - **Navigation**: "Landing Page" link in sidebar and mobile menu
 
 ### Features

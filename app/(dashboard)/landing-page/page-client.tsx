@@ -188,7 +188,7 @@ export function LandingPageListClient({
                   onChange={(e) => setNewSlug(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Your page will be available at: /p/{newSlug || 'your-slug'}
+                  Your page will be available at: /page/{newSlug || 'your-slug'}
                 </p>
               </div>
             </div>
@@ -229,7 +229,7 @@ export function LandingPageListClient({
                   <div>
                     <CardTitle className="text-lg">{page.title}</CardTitle>
                     <CardDescription className="mt-1">
-                      /p/{page.slug}
+                      /page/{page.slug}
                     </CardDescription>
                   </div>
                   <Badge variant={page.isPublished ? 'default' : 'secondary'}>
@@ -268,7 +268,7 @@ export function LandingPageListClient({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => window.open(`/p/${page.slug}`, '_blank')}
+                      onClick={() => window.open(`/page/${page.slug}`, '_blank')}
                     >
                       <ExternalLink className="mr-2 h-4 w-4" />
                       View

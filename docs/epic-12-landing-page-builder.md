@@ -146,14 +146,14 @@ model LandingPage {
 **So that** I can learn about the startup
 
 **Acceptance Criteria:**
-- Public route at `/p/[slug]`
+- Public route at `/page/[slug]`
 - Only shows published pages
 - Uses Puck's Render component
 - Mobile responsive
 - SEO meta tags
 
 **Files:**
-- `app/p/[slug]/page.tsx` - Public page
+- `app/page/[slug]/page.tsx` - Public page
 
 ---
 
