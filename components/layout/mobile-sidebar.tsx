@@ -24,6 +24,7 @@ export function MobileSidebar({ isIncubatorAdmin }: MobileSidebarProps) {
     { href: '/portfolio', label: 'Portfolio', show: isIncubatorAdmin },
     { href: '/documents', label: 'Documents', show: true },
     { href: '/one-pager', label: 'One-Pager', show: true },
+    { href: '/landing-page', label: 'Landing Page', show: true },
     { href: '/assessment', label: 'Assessment', show: true },
     { href: '/settings', label: 'Settings', show: true },
   ]

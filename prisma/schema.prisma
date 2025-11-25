@@ -101,6 +101,7 @@ model Startup {
   onePagers       OnePager[]
   assessments     Assessment[]
   investorGrants  InvestorGrant[]
+  landingPages    LandingPage[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -219,6 +220,28 @@ model OnePagerView {
 
   @@index([onePagerId])
   @@map("one_pager_views")
+}
+
+// ============================================================================
+// LANDING PAGE BUILDER
+// ============================================================================
+
+model LandingPage {
+  id          String   @id @default(cuid())
+  startupId   String
+  startup     Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+
+  title       String
+  slug        String   @unique
+  isPublished Boolean  @default(false)
+  data        Json     // Puck editor JSON data
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([startupId])
+  @@index([slug])
+  @@map("landing_pages")
 }
 
 // ============================================================================

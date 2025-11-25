@@ -62,6 +62,12 @@ export default async function DashboardLayout({
             One-Pager
           </Link>
           <Link
+            href="/landing-page"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+          >
+            Landing Page
+          </Link>
+          <Link
             href="/assessment"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
           >

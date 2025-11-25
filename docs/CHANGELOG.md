@@ -5,7 +5,61 @@ All notable changes to the DueRify platform will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2025-01-21 - MVP COMPLETE 🎉
+## [1.1.0] - 2025-11-25 - Landing Page Builder
+
+### Summary
+Added a WYSIWYG Landing Page Builder using Puck editor, allowing startups to create professional landing pages with drag-and-drop components.
+
+---
+
+## EPIC-12: Landing Page Builder
+
+### Added
+- **Puck Editor Integration**: Full WYSIWYG page builder
+- **15 Pre-built Components**:
+  - Layout: Section, Columns, Spacer, Divider
+  - Hero: Hero Section with CTA buttons
+  - Content: Heading, Text, Button, Image, Card
+  - Sections: Features Grid, Stats, Testimonial, CTA Banner
+  - Footer: Full footer with links and social
+- **Landing Page Management**: Create, edit, delete, publish/unpublish
+- **Public Rendering**: Published pages at `/p/[slug]`
+- **Navigation**: "Landing Page" link in sidebar and mobile menu
+
+### Features
+- Drag-and-drop component placement
+- Real-time visual editing
+- Save/publish workflow
+- Public URLs for sharing
+- Mobile-responsive output
+- Category-organized component panel
+- Customizable styling options per component
+
+### API Endpoints
+- `GET /api/landing-pages` - List pages for startup
+- `POST /api/landing-pages` - Create new page
+- `GET /api/landing-pages/[id]` - Get page details
+- `PUT /api/landing-pages/[id]` - Update page
+- `DELETE /api/landing-pages/[id]` - Delete page
+
+### Components
+- **Layout**: Section (background, padding, max-width), Columns (2-4 col), Spacer, Divider
+- **Hero**: Title, subtitle, CTAs, alignment, background styles
+- **Content**: Heading (h1-h6), Text (sizes, colors), Button (variants), Image (sizing, rounded), Card (icon, title, description)
+- **Sections**: Features Grid (2-4 cols, array of features), Stats (multiple styles), Testimonial (simple/card/featured), CTA Banner (gradient/dark/simple)
+- **Footer**: Company info, links, social links, copyright
+
+### Database
+- New `LandingPage` model with JSON data storage
+- Added relation to `Startup` model
+- Indexes on `startupId` and `slug`
+
+### Dependencies
+- `@measured/puck` - Visual page editor framework
+
+---
+
+## [1.0.0] - 2025-01-21 - MVP COMPLETE
 
 ### Summary
 Complete implementation of DueRify MVP - A startup portfolio management platform for incubators, startups, and investors. All 11 MVP epics delivered with full feature parity to PRD specifications.
@@ -473,10 +527,10 @@ BLOB_READ_WRITE_TOKEN=
 
 ## Release Statistics
 
-- **Total Epics**: 11/11 completed (100%)
+- **Total Epics**: 12/12 completed (100%)
 - **Total Features**: 80+ features delivered
-- **Total Pages**: 24 routes (3 static, 21 dynamic)
-- **Total API Endpoints**: 19 endpoints
+- **Total Pages**: 27 routes (3 static, 24 dynamic)
+- **Total API Endpoints**: 24 endpoints
 - **Total Components**: 60+ React components
 - **Total Database Models**: 15+ models
 - **Lines of Code**: ~15,000+ lines
