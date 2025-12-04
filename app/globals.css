@@ -83,3 +83,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Puck Editor Overrides */
+/* Enable scrolling on the fields panel (right sidebar content) */
+[class*="_PuckFields_"]:not([class*="_PuckFields-"]) {
+  overflow-y: auto !important;
+  max-height: calc(100vh - 16rem) !important;
+  padding-bottom: 2rem !important;
+}

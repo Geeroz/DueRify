@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Calculator } from 'lucide-react'
+import { Calculator, TrendingUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/theme-toggle'
 
@@ -22,6 +22,13 @@ export function Header() {
           </Link>
 
           <div className="flex items-center gap-2">
+            <Button variant="outline" asChild>
+              <Link href="/saas-valuator" className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4" />
+                <span className="hidden md:inline">SaaS Valuator</span>
+              </Link>
+            </Button>
+
             <Button variant="outline" asChild>
               <Link href="/calculator" className="flex items-center gap-2">
                 <Calculator className="h-4 w-4" />

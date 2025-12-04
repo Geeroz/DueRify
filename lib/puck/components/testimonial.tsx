@@ -1,6 +1,7 @@
 'use client'
 
 import { ComponentConfig } from '@measured/puck'
+import { ImagePickerField } from '../fields/image-picker-field'
 
 export interface TestimonialProps {
   quote: string
@@ -18,7 +19,13 @@ export const Testimonial: ComponentConfig<TestimonialProps> = {
     authorName: { type: 'text', label: 'Author Name' },
     authorRole: { type: 'text', label: 'Author Role' },
     authorCompany: { type: 'text', label: 'Company' },
-    authorImage: { type: 'text', label: 'Author Image URL (optional)' },
+    authorImage: {
+      type: 'custom',
+      label: 'Author Image (optional)',
+      render: ({ value, onChange }) => (
+        <ImagePickerField value={value || ''} onChange={onChange} />
+      ),
+    },
     style: {
       type: 'select',
       label: 'Style',

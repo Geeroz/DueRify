@@ -68,6 +68,12 @@ export default async function DashboardLayout({
             Landing Page
           </Link>
           <Link
+            href="/media"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+          >
+            Media
+          </Link>
+          <Link
             href="/assessment"
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
           >

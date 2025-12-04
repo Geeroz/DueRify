@@ -29,6 +29,8 @@ model User {
   documents     Document[]         @relation("DocumentUploader")
   auditLogs     AuditLog[]
   investorGrants InvestorGrant[]   @relation("InvestorUser")
+  uploadedFiles  UploadedFile[]
+  mediaFolders   MediaFolder[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -410,4 +412,47 @@ model Subscription {
 
   @@index([startupId])
   @@map("subscriptions")
+}
+
+// ============================================================================
+// MEDIA MANAGEMENT
+// ============================================================================
+
+model UploadedFile {
+  id           String   @id @default(cuid())
+  filename     String
+  originalName String   @map("original_name")
+  mimeType     String   @map("mime_type")
+  size         Int
+  url          String
+  thumbnailUrl String?  @map("thumbnail_url")
+  folder       String?
+  tags         String[]
+  description  String?
+
+  uploadedById String   @map("uploaded_by_id")
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([uploadedById])
+  @@index([folder])
+  @@map("uploaded_files")
+}
+
+model MediaFolder {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+
+  createdById String   @map("created_by_id")
+  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([slug])
+  @@index([createdById])
+  @@map("media_folders")
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { ComponentConfig } from '@measured/puck'
+import { ImagePickerField } from '../fields/image-picker-field'
 
 export interface ImageProps {
   src: string
@@ -14,7 +15,13 @@ export interface ImageProps {
 export const Image: ComponentConfig<ImageProps> = {
   label: 'Image',
   fields: {
-    src: { type: 'text', label: 'Image URL' },
+    src: {
+      type: 'custom',
+      label: 'Image',
+      render: ({ value, onChange }) => (
+        <ImagePickerField value={value} onChange={onChange} />
+      ),
+    },
     alt: { type: 'text', label: 'Alt Text' },
     rounded: {
       type: 'select',
